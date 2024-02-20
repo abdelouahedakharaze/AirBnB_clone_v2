@@ -10,6 +10,11 @@ from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 import models
 
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id", String(60), ForeignKey(
+                          "places.id"), primary_key=True, nullable=False),
+                      Column("amenity_id", String(60), ForeignKey("amenities.id"), primary_key=True, nullable=False))
+
 
 class Place(BaseModel, Base):
     """
@@ -59,3 +64,30 @@ class Place(BaseModel, Base):
                     review_list.append(review)
 
             return review_list
+
+        @property
+        def amenities(self):
+            """Retrieve a list of linked Amenity instances.
+
+            Returns:
+                list: List of Amenity instances associated with the Place.
+            """
+
+            amenity_list = []
+
+            for amenity in models.storage.all(Amenity).values():
+                if amenity.id in self.amenity_ids:
+                    amenity_list.append(amenity)
+
+            return amenity_list
+
+        @amenities.setter
+        def amenities(self, value):
+            """Append an Amenity ID to the list of linked amenity IDs.
+
+            Args:
+                value (Amenity): An Amenity object to link to the Place.
+            """
+
+            if type(value) == Amenity:
+                self.amenity_ids.append(value.id)
