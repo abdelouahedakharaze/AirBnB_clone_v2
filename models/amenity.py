@@ -1,21 +1,19 @@
 #!/usr/bin/python3
-"""Define the Amenity class."""
+""" State Module for HBNB project """
 from models.base_model import BaseModel, Base
-from os import getenv
-from sqlalchemy import Column, Table, String, ForeignKey
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from os import getenv
 
-place_amenity = Table("place_amenity", Base.metadata,
-                      Column("place_id", String(60), ForeignKey(
-                          "places.id"), primary_key=True, nullable=False),
-                      Column("amenity_id", String(60), ForeignKey("amenities.id"), primary_key=True, nullable=False))
+storage_type = getenv("HBNB_TYPE_STORAGE")
 
 
 class Amenity(BaseModel, Base):
-    """Represent an Amenity for a MySQL database."""
-    __tablename__ = "amenities"
-    if getenv('HBNB_TYPE_STORAGE') == 'db':
+    """ documment doc """
+    __tablename__ = 'amenities'
+    if storage_type == 'db':
         name = Column(String(128), nullable=False)
-        place_amenities = relationship('Place', secondary=place_amenity)
+        place_amenities = relationship('Place', secondary='place_amenity',
+                                       back_populates="amenities")
     else:
-        name = ''
+        name = ""
