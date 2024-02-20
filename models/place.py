@@ -16,7 +16,9 @@ class Place(BaseModel, Base):
     Definition of the Place class
     """
 
+    
     __tablename__ = "places"
+    
 
     if getenv("HBNB_TYPE_STORAGE") == "db":
         city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
@@ -29,14 +31,6 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, default=0)
         latitude = Column(Float)
         longitude = Column(Float)
-        reviews = relationship("Review", backref="place", cascade="delete")
-        amenities = relationship(
-            "Amenity",
-            secondary=place_amenity,
-            back_populates="place_amenities",
-            viewonly=False,
-        )
-        amenity_ids = []
     else:
         city_id = ""
         user_id = ""
