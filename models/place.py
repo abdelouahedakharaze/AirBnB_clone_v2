@@ -16,11 +16,9 @@ class Place(BaseModel, Base):
     Definition of the Place class
     """
 
-    
     __tablename__ = "places"
-    
 
-    if getenv("HBNB_TYPE_STORAGE") == "db":
+    if getenv('HBNB_TYPE_STORAGE') == "db":
         city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
         user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
         name = Column(String(128), nullable=False)
@@ -31,11 +29,16 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, default=0)
         latitude = Column(Float)
         longitude = Column(Float)
+        reviews = relationship("Review", backref="place", cascade="delete")
+        amenities = relationship('Amenity', secondary=place_amenity,
+                                 back_populates='place_amenities',
+                                 viewonly=False)
+        amenity_ids = []
     else:
-        city_id = ""
-        user_id = ""
-        name = ""
-        description = ""
+        city_id = ''
+        user_id = ''
+        name = ''
+        description = ''
         number_rooms = 0
         number_bathrooms = 0
         max_guest = 0
@@ -43,3 +46,16 @@ class Place(BaseModel, Base):
         latitude = 0.0
         longitude = 0.0
         amenity_ids = []
+
+        @property
+        def reviews(self):
+            """Get a list of all linked Reviews.
+            """
+
+            review_list = []
+
+            for review in models.storage.all(Review).values():
+                if review.place_id == self.id:
+                    review_list.append(review)
+
+            return review_list
