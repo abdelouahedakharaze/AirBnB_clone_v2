@@ -3,7 +3,7 @@
 """
 from fabric.api import task, local
 from datetime import datetime
-
+['54.236.45.92', '100.26.226.174']
 
 @task
 def do_pack():
